@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <!-- Meta viewport per il responsive design -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <!-- Meta tags per la modalità web app su iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+ <title>Il Mio Sito Architettura - Solo Landscape su Mobile</title>
+  <style>
+    /* Importa il font Montserrat con peso 300 */
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap');
+
+    /* Keyframes per effetto spirale (non usato in questa versione) */
+    @keyframes spiralIn {
+      0% {
+        transform: translate(-50%, -50%) rotate(-360deg) scale(0);
+        opacity: 0;
+      }
+      100% {
+        transform: translate(-50%, -50%) rotate(0deg) scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Keyframes per il cursore lampeggiante */
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* Stile del cursore */
+    .cursor {
+      display: inline-block;
+      background-color: white;
+      width: 10px;
+      height: 1em;
+      margin-left: 5px;
+      animation: blink 1s step-start infinite;
+    }
+
+    /* Animazione per il logo */
+    @keyframes logoBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .logo-blink {
+      animation: logoBlink 1s linear 2;
+    }
+
+    /* Reset e impostazioni generali */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Brandon Grotesque', sans-serif; color: white; overflow: hidden; }
+
+    /* Contenitore verticale */
+    .vertical-container {
+      height: 100vh;
+      overflow: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+    .vertical-container > .gallery-container {
+      height: 100vh;
+    }
+
+    /* Galleria e sezioni */
+    .gallery {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      height: 100%;
+    }
+    .section {
+      min-width: 100vw;
+      height: 100%;
+      position: relative;
+    }
+
+    /* --- Gallery1 --- */
+    .gallery1 .section:first-child {
+      background: url('https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/fj2skjccwino13cdlnzf') no-repeat center center/cover;
+    }
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+    }
+
+    /* Pannelli (stile identico per desktop e mobile) */
+    .panel {
+      width: 250px;
+      background: black;
+      position: fixed;
+      padding: 15px;
+      color: white;
+      font-size: 10px;
+      cursor: grab;
+      border: 2px solid;
+      border-image-source: linear-gradient(to top, #7979cc, #6ba4de);
+      border-image-slice: 1;
+      box-shadow: 5px 5px 10px rgba(0,0,0,0.5);
+      z-index: 3000;
+      pointer-events: auto;
+    }
+    #global-panels {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 3000;
+      pointer-events: none;
+    }
+    #more-panel {
+      position: fixed;
+      top: 645px;
+      left: calc(213px + 250px);
+      width: 250px;
+      background: black;
+      display: none;
+      padding: 15px;
+      color: white;
+      font-family: 'Brandon Grotesque', sans-serif;
+      font-size: 10px;
+      border: none;
+      box-shadow: none;
+      z-index: 3000;
+    }
+    .panel-title { font-size: 12px; font-weight: bold; }
+    .social-icons {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .social-icons a {
+      text-decoration: none;
+    }
+    .social-icons a img {
+      width: 30px; height: 30px;
+      cursor: pointer;
+    }
+
+    /* Immagini full-screen */
+    .full-screen {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    /* Before/After */
+    .before-after-container {
+      position: relative;
+      width: 100%; height: 100%;
+      overflow: hidden;
+    }
+    .before-after-container .before-image,
+    .before-after-container .after-image {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .before-after-container:not(.adapt) .before-image,
+    .before-after-container:not(.adapt) .after-image {
+      background-size: cover;
+    }
+    .before-after-container.adapt .before-image,
+    .before-after-container.adapt .after-image {
+      background-size: contain;
+    }
+    .before-after-container .after-image {
+      clip-path: inset(0 50% 0 0);
+     -webkit-clip-path: inset(0 50% 0 0);
+    }
+    .before-after-container .slider {
+      position: absolute;
+      top: 0; left: 50%;
+      width: 2px; height: 100%;
+      background: white;
+      cursor: ew-resize;
+      transform: translateX(-50%);
+    }
+
+    /* Gallery2 */
+    .gallery2 .section {
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gallery2 .section img {
+      max-width: 100%; max-height: 100%;
+    }
+
+    /* Gallery3 */
+    .gallery3 .section {
+      background: #1b1c1c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gallery3 .section img {
+      max-width: 100%; max-height: 100%;
+    }
+    .split-container {
+      display: flex;
+      width: 100%; height: 100%;
+    }
+    .left-side, .right-side {
+      width: 50%; height: 100%;
+    }
+    .full-image {
+      width: 100%; height: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    /* Frecce */
+    .arrow {
+      position: fixed;
+      width: 50px; height: 50px;
+      cursor: pointer;
+      z-index: 4000;
+    }
+    .arrow:hover { opacity: 0.8; }
+    .up    { top: 20px; left: 50%; transform: translateX(-50%) rotate(-90deg); }
+    .down  { bottom: 20px; left: 50%; transform: translateX(-50%) rotate(90deg); }
+    .left  { left: 20px; top: 50%; transform: translateY(-50%) rotate(180deg); }
+    .right { right: 20px; top: 50%; transform: translateY(-50%); }
+
+    /* Form */
+    #more-panel input,
+    #more-panel textarea {
+      width: 100%;
+      border: none;
+      background: transparent;
+      border-bottom: 1px solid #555;
+      color: white;
+      font-family: 'Brandon Grotesque', sans-serif;
+      font-size: 10px;
+      padding: 5px;
+    }
+    #more-panel input:focus,
+    #more-panel textarea:focus {
+      outline: none;
+      border-bottom: 1px solid #7979cc;
+    }
+    #more-panel button {
+      font-size: 12px;
+      padding: 5px 10px;
+      background: #7979cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Logo in alto a sinistra */
+    #global-logo {
+      position: fixed;
+      top: 10px; left: 20px;
+      width: 300px; height: 100px;
+      background: url('https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/nfmefd9nul0pwjsajh8k') no-repeat center center/contain;
+      z-index: 8000;
+      cursor: pointer;
+    }
+
+    /* Classe per i loghi in alto a destra nelle gallerie */
+    .gallery-logo {
+      /* Dimensioni definite in desktop (ad esempio, 350px) verranno ridotte nell'80% su Mobile */
+    }
+
+    /* Nuova schermata grigia */
+    #new-screen {
+      display: none;
+      position: relative;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #1b1c1c;
+      z-index: 5000;
+      overflow: hidden;
+    }
+    .white-box-container {
+      position: relative;
+      width: 100%; height: 100%;
+    }
+    .white-box {
+      background: white;
+      width: 70vmin; height: 70vmin;
+      box-shadow: 5px 5px 10px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: black;
+      position: absolute;
+      top: 50%; left: 50%;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+      border: 2px solid;
+      border-image-source: linear-gradient(to top, #7979cc, #6ba4de);
+      border-image-slice: 1;
+    }
+    
+    /* Caption */
+    .render-title {
+      position: absolute;
+      left: calc(25% - 17.5vmin);
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-family: "Montserrat", sans-serif;
+      font-weight: 300;
+      font-style: normal;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      word-spacing: 0.6em;
+      color: white;
+      font-size: 24px;
+      pointer-events: none;
+      transition: opacity 0.35s ease-in-out;
+      opacity: 0;
+    }
+
+    /* Spacer */
+    .spacer-box {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    .arrow-down-container {
+      position: absolute;
+      top: calc(50% + 40vmin + 40px);
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.35s ease-in-out;
+    }
+    .center-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: "Montserrat", sans-serif;
+      font-weight: 300;
+      font-style: normal;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      word-spacing: 0.6em;
+      background: linear-gradient(to right, #7979cc, #6ba4de);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 24px;
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.4s ease-in-out;
+    }
+
+    /* Schermate bianche */
+    #white-screen, #white-screen2 {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: white;
+      z-index: 7000;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .white-screen-title {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 32px;
+      color: black;
+      z-index: 9000;
+    }
+    .white-grid-container {
+      position: absolute;
+      top: 120px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      gap: 1px;
+      grid-template-columns: repeat(5, calc((100% - 4px) / 5));
+    }
+    .grid-item {
+      position: relative;
+      width: 100%;
+      padding-bottom: 100%;
+      background-color: #ffffff;
+    }
+    .grid-item img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Modal */
+    #image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+    #image-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .coming-soon {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 24px;
+      color: black;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+    }
+
+    /* MEDIA QUERIES per dispositivi mobili in portrait */
+    @media (max-width: 768px) {
+      body { overflow-y: hidden; }
+      .vertical-container { height: 100vh; }
+      .gallery { transition: transform 0.3s ease-in-out; }
+      .section { min-width: 100%; height: 100vh; }
+      .arrow { width: 40px; height: 40px; }
+      .center-message, .white-screen-title { font-size: 18px; }
+      /* Logo in portrait: dimensioni ridotte */
+      #global-logo {
+        width: 200px;
+        height: 70px;
+      }
+    }
+
+    /* MEDIA QUERIES per dispositivi mobili in landscape:
+       Riduciamo ulteriormente i pannelli in landscape */
+    @media (max-width: 1320px) and (orientation: landscape) {
+      .section { height: 100%; }
+      .arrow { width: 50px; height: 50px; }
+      .center-message, .white-screen-title { font-size: 24px; }
+      .panel {
+        width: 150px;
+        padding: 5px;
+        font-size: 6px;
+      }
+      #more-panel {
+        width: 120px;
+      }
+      #global-logo {
+        width: 200px;
+        height: 70px;
+      }
+    }
+
+    /* Nuova regola per i loghi in alto a destra nelle gallerie */
+    @media (max-width: 1320px) {
+      .gallery-logo {
+        width: 150px !important;
+        height: auto;
+      }
+    }
+
+    /* Nuovo overlay per disabilitare la visualizzazione in portrait su Mobile */
+    #rotate-notice {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      color: #fff;
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      font-size: 24px;
+      font-family: 'Montserrat', sans-serif;
+    }
+    @media (orientation: portrait) and (max-width: 768px) {
+      #rotate-notice {
+        display: flex;
+      }
+      #content {
+        display: none;
+      }
+.rotate-gif {
+  position: absolute; /* oppure relative in base al contesto */
+  top: 30%;          /* regola la distanza dal top */
+  right: center;        /* regola la distanza dal lato destro */
+  width: 100px;       /* dimensione personalizzata, modifica a piacimento */
+  height: auto;
+}
+    }
+    @media (orientation: landscape) and (max-width: 1320px) {
+      #rotate-notice {
+        display: none;
+      }
+      #content {
+        display: block;
+      }
+    }
+
+    /* In modalità mobile (max-width: 1320px) in landscape, le scritte in #new-screen sono ridotte a 12px 
+       e i box vengono sollevati di 25px in più: ora top diventa calc(50% - 30px - 5px) = calc(50% - 35px)
+       (dunque riduciamo di 5px rispetto alla versione precedente in questa regola) */
+    @media (max-width: 1320px) and (orientation: landscape) {
+      #new-screen .center-message,
+      #new-screen .render-title {
+        font-size: 12px !important;
+      }
+      /* Abbassiamo i box di 5px rispetto alla versione precedente */
+      #new-screen .white-box {
+        top: calc(50% - 30px) !important;
+      }
+    }
+.ios .full-image,
+.ios .before-after-container .before-image,
+.ios .before-after-container .after-image {
+  background-size: cover !important;
+}
+  </style>
+  <script src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    (function(){ emailjs.init("YOUR_USER_ID"); })();
+    // Array delle didascalie (con indici 5 e 6 invertiti)
+    var captions = [
+      "", // Spacer box
+      "RENDER ESTERNI",
+      "RENDER INTERNI",
+      "PIANTE ARREDATE E<br>BOOK DI VENDITA",
+      "VIDEO RENDERING",
+      "RIPRESE AEREE CON DRONE",
+      "FOTOINSERIMENTI"
+    ];
+    window.currentBoxIndex = 0;
+    window.isAnimating = false;
+
+    function typeWriterEffect(element, text, i, speed) {
+      if (i <= text.length) {
+        element.innerHTML = text.substring(0, i) + '<span class="cursor"></span>';
+        setTimeout(function() {
+          typeWriterEffect(element, text, i + 1, speed);
+        }, speed);
+      }
+    }
+
+    function blinkLogo() {
+      var logo = document.getElementById("global-logo");
+      logo.classList.add("logo-blink");
+      setTimeout(function(){
+        logo.classList.remove("logo-blink");
+      }, 2000);
+    }
+
+    window.addEventListener("load", blinkLogo);
+
+    function goToWhiteScreen() {
+      document.getElementById("new-screen").style.display = "none";
+      document.getElementById("white-screen").style.display = "block";
+    }
+    function goToWhiteScreen2() {
+      document.getElementById("new-screen").style.display = "none";
+      document.getElementById("white-screen2").style.display = "block";
+    }
+    function backToNewScreen() {
+      document.getElementById("white-screen").style.display = "none";
+      document.getElementById("white-screen2").style.display = "none";
+      document.getElementById("new-screen").style.display = "block";
+    }
+
+    function openModal(src) {
+      var modal = document.getElementById("image-modal");
+      var modalImg = document.getElementById("modal-image");
+      modalImg.src = src;
+      modal.style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById("image-modal").style.display = "none";
+    }
+
+    window.addEventListener('load', function() {
+      document.querySelectorAll('#white-screen .grid-item img, #white-screen2 .grid-item img').forEach(function(img) {
+        img.addEventListener('click', function(e) {
+          openModal(this.src);
+          e.stopPropagation();
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+   <!-- Overlay visibile solo in modalità portrait su Mobile -->
+  <div id="rotate-notice">
+ <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXhhNjdxaTE3ZGEyeWljeTdvdmp3dnhwNjVxejJkaGdkZTQwMGc3eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/1DtYcLp3GDlY2RsVXd/giphy.gif" alt="GIF orientamento" class="rotate-gif">
+    <p>Per favore, ruota il dispositivo in modalità orizzontale per visualizzare il sito.</p>
+  </div>
+  <!-- Contenuto principale (visibile solo in landscape su Mobile e su desktop) -->
+  <div id="content">
+    <!-- Contenitore verticale -->
+    <div class="vertical-container" id="vertical-container">
+      <!-- Gallery1 -->
+      <div class="gallery-container gallery1" id="gallery1">
+        <div class="gallery" id="gallery1-slides">
+          <div class="section">
+            <!-- Logo in alto a destra con classe gallery-logo -->
+            <img class="gallery-logo" src="https://res.cloudinary.com/detazklsz/image/upload/f_png,q_auto/pzeg6xutbniwluz92kuh" alt="Overlay Gallery1" style="position: absolute; top: 20px; right: 300px; z-index: 10; width: 350px; height: auto;">
+            <div class="hero"></div>
+          </div>
+          <div class="section">
+            <!-- Aggiunto anche l'attributo ontouchmove per supportare il drag touch -->
+            <div class="before-after-container" onmousemove="moveSlider(event)" ontouchmove="moveSlider(event)">
+              <div class="before-image" style="background-image: url('https://res.cloudinary.com/detazklsz/image/upload/f_png,q_auto/sbnd4j4iuj4ue59r7l9z');"></div>
+              <div class="after-image" id="after" style="background-image: url('https://res.cloudinary.com/detazklsz/image/upload/f_png,q_auto/voq4alg7s6wugxtiu0nm');"></div>
+              <div class="slider" id="slider"></div>
+            </div>
+          </div>
+          <!-- Sezione con la terza immagine -->
+          <div class="section">
+            <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/bmr0at8tspae4ijjjqch" alt="Terza Immagine Gallery1" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gallery2 -->
+      <div class="gallery-container gallery2" id="gallery2">
+        <div class="gallery" id="gallery2-slides">
+          <div class="section">
+            <img class="full-screen" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/c40yllspgbmayvxf1mcq" alt="Full Image">
+            <!-- Logo in alto a destra con classe gallery-logo -->
+            <img class="gallery-logo" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/v9q77qtkkz9yihklacan" alt="Overlay Gallery2" style="position: absolute; top: 30px; right: 0; z-index: 10; width: 350px; height: auto;" onclick="event.stopPropagation();">
+          </div>
+          <div class="section">
+            <div class="before-after-container" onmousemove="moveSlider2(event)" ontouchmove="moveSlider2(event)">
+              <div class="before-image" style="background-image: url('https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/xftgfidien3iqov5cygt');"></div>
+              <div class="after-image" id="after2" style="background-image: url('https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/yssoxfqahietbessld07');"></div>
+              <div class="slider" id="slider2"></div>
+            </div>
+          </div>
+          <div class="section">
+            <img class="full-screen" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/ihachzk724kys3ao0jkb" alt="Replaced Image">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gallery3 -->
+      <div class="gallery-container gallery3" id="gallery3">
+        <div class="gallery" id="gallery3-slides">
+          <div class="section">
+            <img class="full-screen" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/lwegz8hwvjhs5mylo1fp" alt="New Image">
+            <!-- Logo in alto a destra con classe gallery-logo -->
+            <img class="gallery-logo" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/y8puagvfqdgst8f5payy" alt="Overlay Gallery3" style="position: absolute; top: 30px; right: 30px; z-index: 10; width: 350px; height: auto;" onclick="event.stopPropagation();">
+          </div>
+          <div class="section">
+            <div class="split-container">
+              <div class="left-side">
+                <div class="before-after-container adapt" onmousemove="moveSlider3(event)" ontouchmove="moveSlider3(event)">
+                  <div class="before-image" style="background-image: url('https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/egchfd5f56g1irbppnia');"></div>
+                  <div class="after-image" id="after3" style="background-image: url('https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/xu6y1vpydx797f5k17tf');"></div>
+                  <div class="slider" id="slider3"></div>
+                </div>
+              </div>
+              <div class="right-side">
+                <div class="full-image" style="background-image: url('https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/neckcmvyxk2595ydt4i2');"></div>
+              </div>
+            </div>
+          </div>
+          <div class="section">
+            <img class="full-screen" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/opflskxccprytz8qtkvc" alt="Additional New Image">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global Panels -->
+    <div id="global-panels">
+      <div class="panel" style="top: 100px; left: 100px;" id="about-panel">
+        <p class="panel-title">About Us</p><br>
+        <p id="about-text" onclick="event.stopPropagation();"><strong>Ti presentiamo</strong><br>
+        CANTELLO'S STUDIO<br><br>
+        Aiutiamo la tua impresa/azienda a vendere di più e più velocemente al tuo cliente. Come?<br><br>
+        Un Rendering ben fatto rappresenta una rivoluzione per il settore immobiliare, perché consente di vivere l’esperienza di un immobile prima di visitarlo, aumentando così le possibilità di vendita.<br><br>
+        Siamo in grado di offrire soluzioni personalizzate per ogni esigenza, dalle immagini statiche ai video, arrivando anche ai Render 360° per valorizzare al meglio le potenzialità dell'immobile.<br><br>
+        I clienti così possono rendersi conto degli arredi, degli spazi e dei materiali che comporranno la loro casa come se fosse già realizzata.<br><br>
+        Questo è un vantaggio da non sottovalutare!<br><br>
+        Offriamo anche il servizio di fotoinserimento del tuo progetto nel contesto reale, richiesto oramai spesso da: comuni, commissioni paesistiche e soprintendenza.</p>
+        <button class="translate-btn" onclick="event.stopPropagation(); toggleLanguage();">🇬🇧 Translate</button>
+      </div>
+      <div class="panel" style="top: 645px; left: 213px;" id="contact-panel">
+        <p class="panel-title">Contact Us</p><br>
+        <p onclick="event.stopPropagation();">
+          Cantello's Studio<br>
+          Paderno Dugnano, Milano<br>
+          Italy<br><br>
+          Tel. +39 3791803551<br>
+          Mail cantellos.studio@gmail.com<br>
+          <span id="more-btn" style="text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation();">more</span><br><br>
+          Follow Us
+        </p>
+        <div class="social-icons">
+          <a href="https://www.instagram.com/cantellos.studio/" target="_blank" onclick="event.stopPropagation();">
+            <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/wbyofocjlxsivckgxjxq" alt="Instagram">
+          </a>
+          <a href="https://www.tiktok.com/@cantellos.studio" target="_blank" onclick="event.stopPropagation();">
+            <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/s9uisak5rdozc8m5s3ou" alt="TikTok">
+          </a>
+        </div>
+      </div>
+      <div id="more-panel">
+        <form id="contact-form" onclick="event.stopPropagation();">
+          <label><strong>Nome *</strong></label><br>
+          <input type="text" name="nome" placeholder="Inserisci il tuo nome" required><br><br>
+          <label><strong>Email *</strong></label><br>
+          <input type="email" name="email" placeholder="Inserisci la tua email" required><br><br>
+          <label><strong>Telefono</strong></label><br>
+          <input type="tel" name="telefono" placeholder="Inserisci il tuo tel." required><br><br>
+          <label><strong>Indirizzo</strong></label><br>
+          <input type="text" name="indirizzo" placeholder="Inserisci il tuo indirizzo" required><br><br>
+          <label><strong>Oggetto</strong></label><br>
+          <input type="text" name="oggetto" placeholder="Inserire l'oggetto" required><br><br>
+          <label><strong>Messaggio</strong></label><br>
+          <textarea name="messaggio" placeholder="Scrivi qui il tuo messaggio..." required></textarea><br><br>
+          <button type="submit" onclick="event.stopPropagation();">Invia</button>
+        </form>
+      </div>
+      <div class="panel" style="top: 518px; left: 582px; display: flex; align-items: center; justify-content: center;">
+        <button id="enter-btn" onclick="event.stopPropagation();" style="background: none; border: none; color: white; font-size: 12px; cursor: pointer; text-transform: uppercase;">SERVIZI OFFERTI</button>
+      </div>
+    </div>
+    
+    <!-- Global Logo -->
+    <div id="global-logo"></div>
+    
+    <!-- Frecce -->
+    <img class="arrow up" onclick="changeSection('up')" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/k6ovz1jdkc6pijfuiaup" alt="Arrow Up">
+    <img class="arrow down" onclick="changeSection('down')" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/k6ovz1jdkc6pijfuiaup" alt="Arrow Down">
+    <img class="arrow left" onclick="changeSection('left')" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/k6ovz1jdkc6pijfuiaup" alt="Arrow Left">
+    <img class="arrow right" onclick="changeSection('right')" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/k6ovz1jdkc6pijfuiaup" alt="Arrow Right">
+    
+    <!-- Nuova schermata grigia -->
+    <div id="new-screen">
+      <div class="render-title"></div>
+      <div class="center-message">NEVER STOP TURNING DREAMS INTO REALITY</div>
+      <div class="white-box-container">
+        <div class="white-box spacer-box" style="opacity: 0;"></div>
+        <div class="white-box" onclick="goToWhiteScreen()" style="cursor: pointer;">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/usihwfyooyt1ej9dkur9" alt="Box 1 Image" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="white-box" onclick="goToWhiteScreen2()" style="cursor: pointer;">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/s0rqhqywecgls3f3i1ec" alt="Box 2 Image" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="white-box">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/x2v4czybp7irxcgy3r4m" alt="Box 3 Image" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+        <div class="white-box" style="width: 125vmin; height: 70vmin;">
+          <video src="https://res.cloudinary.com/detazklsz/video/upload/f_auto:video,q_auto/tizpejufmi74lhtjzxee" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+        </div>
+        <div class="white-box" style="width: 125vmin; height: 70vmin;">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/zayzc8fp2xzjlr1saiwn" alt="Box 5 Image" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="white-box" style="width: 125vmin; height: 70vmin;">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/gvvvhhgcpdxor4ypclax" alt="Box 6 Image" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+      </div>
+      <div class="arrow-down-container">
+        <img class="arrow down" src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/k6ovz1jdkc6pijfuiaup" alt="Arrow Down">
+      </div>
+    </div>
+    
+    <!-- Schermata terza: bianca -->
+    <div id="white-screen">
+      <div class="white-screen-title">ARCHIVIO</div>
+      <div class="white-grid-container">
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/u82rm0eszl4aklhfjuvf" alt="Image 1"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/eplxvscwuh40jeo6a0an" alt="Image 2"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/cvlmcktjykei3oq4vpq8" alt="Image 3"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/j2ezn0u34xlqks1ztul3" alt="Image 4"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/neckcmvyxk2595ydt4i2" alt="Image 5"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/qwnmedqt3iplwouxfog4" alt="Image 6"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/pj0kbwonkdpjoyrjiduu" alt="Image 7"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/orff2aia1ybvgzcphymb" alt="Image 8"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/ytkfm7szdmqyvhuxcazb" alt="Image 9"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/yssoxfqahietbessld07" alt="Image 10"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/c40yllspgbmayvxf1mcq" alt="Image 11"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/saa1uvqqz6wdiarsdarl" alt="Image 12"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/rcb0pornowky7bmcwqt6" alt="Image 13"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/bie9wdfmktoowvorcg79" alt="Image 14"/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/b3lc9gdotxstxgmgraw8" alt="Image 15"/>
+        </div>
+        <div class="grid-item" style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/ehmjev1hfw857vqlnmsf" alt="Nuova Image" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, calc(-50% - 10%)); width: 20%; height: auto; object-fit: contain;">
+          <div class="coming-soon">COMING SOON</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Schermata quarta: bianca -->
+    <div id="white-screen2">
+      <div class="white-screen-title">ARCHIVIO</div>
+      <div class="white-grid-container">
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/mftmitnc6x6tv47oh80h" alt="..."/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/e3278mc4tgp6c8sm22xe" alt="..."/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/qd3gopfghqpl0vjx2mgr" alt="..."/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/eegzfzf7ykpjol5gthy0" alt="..."/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/iovrzpdsnwx1kr5gj1nh" alt="..."/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/jf637zhds4umrlw8pzap" alt="..."/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/jvu4jtmk5jib8ufc2hbu" alt="..."/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/hi9e2cuioegd68ew7m1k" alt="..."/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/rdqmqmavqvejf6g5uwjk" alt="..."/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/dvq7ggjpdujnia41o2hp" alt="..."/>
+        </div>
+        <div class="grid-item">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/mgeb2xbtto2ongg6rvcd" alt="New Image"/>
+        </div>
+        <div class="grid-item" style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+          <img src="https://res.cloudinary.com/detazklsz/image/upload/f_auto,q_auto/ehmjev1hfw857vqlnmsf" alt="Nuova Image" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, calc(-50% - 10%)); width: 20%; height: auto; object-fit: contain;">
+          <div class="coming-soon">COMING SOON</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal per l'immagine ingrandita -->
+  <div id="image-modal" onclick="closeModal()">
+    <img id="modal-image" src="" alt="Zoomed Image">
+  </div>
+  
+  <script>
+    // Variabili per la navigazione verticale
+    let verticalIndex = 0;
+    const verticalSections = [
+      document.getElementById("gallery1"),
+      document.getElementById("gallery2"),
+      document.getElementById("gallery3")
+    ];
+
+    // Gallery1
+    let currentIndexGallery1 = 0;
+    const gallery1 = document.getElementById("gallery1-slides");
+    const sectionsGallery1 = gallery1.querySelectorAll(".section");
+    function scrollGallery1(direction) {
+      if (direction === 'right') {
+        currentIndexGallery1 = (currentIndexGallery1 + 1) % sectionsGallery1.length;
+      } else if (direction === 'left') {
+        currentIndexGallery1 = (currentIndexGallery1 - 1 + sectionsGallery1.length) % sectionsGallery1.length;
+      }
+      gallery1.style.transform = `translateX(${-currentIndexGallery1 * window.innerWidth}px)`;
+    }
+
+    // Gallery2
+    let currentIndexGallery2 = 0;
+    const gallery2 = document.getElementById("gallery2-slides");
+    const sectionsGallery2 = gallery2.querySelectorAll(".section");
+    function scrollGallery2(direction) {
+      if (sectionsGallery2.length <= 1) return;
+      if (direction === 'right') {
+        currentIndexGallery2 = (currentIndexGallery2 + 1) % sectionsGallery2.length;
+      } else if (direction === 'left') {
+        currentIndexGallery2 = (currentIndexGallery2 - 1 + sectionsGallery2.length) % sectionsGallery2.length;
+      }
+      gallery2.style.transform = `translateX(${-currentIndexGallery2 * window.innerWidth}px)`;
+    }
+
+    // Gallery3
+    let currentIndexGallery3 = 0;
+    const gallery3 = document.getElementById("gallery3-slides");
+    const sectionsGallery3 = gallery3.querySelectorAll(".section");
+    function scrollGallery3(direction) {
+      if (sectionsGallery3.length <= 1) return;
+      if (direction === 'right') {
+        currentIndexGallery3 = (currentIndexGallery3 + 1) % sectionsGallery3.length;
+      } else if (direction === 'left') {
+        currentIndexGallery3 = (currentIndexGallery3 - 1 + sectionsGallery3.length) % sectionsGallery3.length;
+      }
+      gallery3.style.transform = `translateX(${-currentIndexGallery3 * window.innerWidth}px)`;
+    }
+
+    // Funzione unificata per le frecce
+    function changeSection(direction) {
+      if (direction === "left" || direction === "right") {
+        switch (verticalIndex) {
+          case 0: scrollGallery1(direction); break;
+          case 1: scrollGallery2(direction); break;
+          case 2: scrollGallery3(direction); break;
+        }
+      } else if (direction === "up" || direction === "down") {
+        if (direction === "down") {
+          verticalIndex = (verticalIndex + 1) % verticalSections.length;
+        } else {
+          verticalIndex = (verticalIndex - 1 + verticalSections.length) % verticalSections.length;
+        }
+        verticalSections[verticalIndex].scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    // Funzioni Before/After (modificate per gestire anche touch)
+    function moveSlider(event) {
+      event.preventDefault();
+      let clientX = event.clientX;
+      if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+      }
+      const container = document.querySelector(".gallery1 .before-after-container");
+      const afterImage = document.getElementById("after");
+      const slider = document.getElementById("slider");
+      let rect = container.getBoundingClientRect();
+      let offsetX = clientX - rect.left;
+      let percent = (offsetX / rect.width) * 100;
+       const clipValue = `inset(0 ${100 - percent}% 0 0)`;
+      afterImage.style.clipPath = clipValue;
+      afterImage.style.webkitClipPath = clipValue;
+      slider.style.left = `${percent}%`;
+    }
+
+    function moveSlider2(event) {
+      event.preventDefault();
+      let clientX = event.clientX;
+      if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+      }
+      const container = document.querySelector("#gallery2 .before-after-container");
+      const afterImage = document.getElementById("after2");
+      const slider = document.getElementById("slider2");
+      let rect = container.getBoundingClientRect();
+      let offsetX = clientX - rect.left;
+      let percent = (offsetX / rect.width) * 100;
+      const clipValue = `inset(0 ${100 - percent}% 0 0)`;
+      afterImage.style.clipPath = clipValue;
+      afterImage.style.webkitClipPath = clipValue;
+      slider.style.left = `${percent}%`;
+    }
+
+    function moveSlider3(event) {
+      event.preventDefault();
+      let clientX = event.clientX;
+      if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+      }
+      const container = document.querySelector("#gallery3 .before-after-container.adapt");
+      const afterImage = document.getElementById("after3");
+      const slider = document.getElementById("slider3");
+      let rect = container.getBoundingClientRect();
+      let offsetX = clientX - rect.left;
+      let percent = (offsetX / rect.width) * 100;
+      const clipValue = `inset(0 ${100 - percent}% 0 0)`;
+      afterImage.style.clipPath = clipValue;
+      afterImage.style.webkitClipPath = clipValue;
+      slider.style.left = `${percent}%`;
+    }
+
+
+    function toggleLanguage() {
+      let text = document.getElementById('about-text');
+      let button = document.querySelector('.translate-btn');
+      if (button.innerText.includes('🇬🇧')) {
+        text.innerHTML = `<strong>We present</strong><br>
+        CANTELLO'S STUDIO<br><br>
+        We help your business/company sell more and faster to your client. How?<br><br>
+        A well-made rendering represents a revolution for the real estate sector, as it allows you to experience a property before visiting it, increasing sales opportunities.<br><br>
+        We offer customized solutions for every need, from static images to videos, including 360° Renders to best showcase the potential of the property.<br><br>
+        Customers can understand the furnishings, spaces, and materials that will make up their home as if it were already built. This is an advantage not to be underestimated!<br><br>
+        We also offer a photomontage service for your project in its real context, often required by municipalities, landscape commissions, and heritage authorities.`;
+        button.innerText = '🇮🇹 Traduci';
+      } else {
+        text.innerHTML = `<strong>Ti presentiamo</strong><br>
+        CANTELLO'S STUDIO<br><br>
+        Aiutiamo la tua impresa/azienda a vendere di più e più velocemente al tuo cliente. Come?<br><br>
+        Un Rendering ben fatto rappresenta una rivoluzione per il settore immobiliare, perché consente di vivere l’esperienza di un immobile prima di visitarlo, aumentando così le possibilità di vendita.<br><br>
+        Siamo in grado di offrire soluzioni personalizzate per ogni esigenza, dalle immagini statiche ai video, arrivando anche ai Render 360° per valorizzare al meglio le potenzialità dell'immobile.<br><br>
+        I clienti così possono rendersi conto degli arredi, degli spazi e dei materiali che comporranno la loro casa come se fosse già realizzata.<br><br>
+        Questo è un vantaggio da non sottovalutare!<br><br>
+        Offriamo anche il servizio di fotoinserimento del tuo progetto nel contesto reale, richiesto oramai spesso da: comuni, commissioni paesistiche e soprintendenza.`;
+        button.innerText = '🇬🇧 Translate';
+      }
+    }
+
+    // Drag & Drop per i pannelli (mouse e touch)
+    document.querySelectorAll('.panel').forEach(panel => {
+      // Mouse events
+      panel.addEventListener('mousedown', (event) => {
+        let shiftX = event.clientX - panel.getBoundingClientRect().left;
+        let shiftY = event.clientY - panel.getBoundingClientRect().top;
+        function moveAt(pageX, pageY) {
+          let newLeft = pageX - shiftX;
+          let newTop = pageY - shiftY;
+          panel.style.left = newLeft + 'px';
+          panel.style.top = newTop + 'px';
+          if(panel.id === "contact-panel") {
+            let morePanel = document.getElementById("more-panel");
+            morePanel.style.left = (newLeft + panel.offsetWidth) + 'px';
+            morePanel.style.top = newTop + 'px';
+          }
+        }
+        function onMouseMove(event) {
+          moveAt(event.pageX, event.pageY);
+        }
+        document.addEventListener('mousemove', onMouseMove);
+        panel.addEventListener('mouseup', () => {
+          document.removeEventListener('mousemove', onMouseMove);
+        }, { once: true });
+      });
+      panel.addEventListener('dragstart', () => false);
+
+      // Touch events
+      panel.addEventListener('touchstart', (event) => {
+        const interactiveTags = ['BUTTON', 'A', 'INPUT', 'TEXTAREA'];
+        if (interactiveTags.includes(event.target.tagName) || event.target.id === 'more-btn') {
+          return;
+        }
+        event.preventDefault();
+        let touch = event.touches[0];
+        let shiftX = touch.clientX - panel.getBoundingClientRect().left;
+        let shiftY = touch.clientY - panel.getBoundingClientRect().top;
+        function moveAt(pageX, pageY) {
+          let newLeft = pageX - shiftX;
+          let newTop = pageY - shiftY;
+          panel.style.left = newLeft + 'px';
+          panel.style.top = newTop + 'px';
+          if(panel.id === "contact-panel") {
+            let morePanel = document.getElementById("more-panel");
+            morePanel.style.left = (newLeft + panel.offsetWidth) + 'px';
+            morePanel.style.top = newTop + 'px';
+          }
+        }
+        function onTouchMove(event) {
+          let touch = event.touches[0];
+          moveAt(touch.clientX, touch.clientY);
+        }
+        panel.addEventListener('touchmove', onTouchMove);
+        panel.addEventListener('touchend', () => {
+          panel.removeEventListener('touchmove', onTouchMove);
+        }, { once: true });
+      });
+    });
+
+    document.getElementById('more-btn').addEventListener('click', function(event){
+      event.stopPropagation();
+      var morePanel = document.getElementById('more-panel');
+      morePanel.style.display = (morePanel.style.display === 'none' || morePanel.style.display === '') ? 'block' : 'none';
+    });
+
+    document.getElementById('contact-form').addEventListener('submit', function(event){
+      event.preventDefault();
+      const formData = {
+         nome: this.nome.value,
+         email: this.email.value,
+         telefono: this.telefono.value,
+         indirizzo: this.indirizzo.value,
+         oggetto: this.oggetto.value,
+         messaggio: this.messaggio.value
+      };
+      emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", formData)
+        .then(function(response) {
+           alert("Messaggio inviato con successo!");
+        }, function(error) {
+           alert("Errore durante l'invio del messaggio: " + JSON.stringify(error));
+        });
+    });
+
+    document.getElementById("global-logo").addEventListener("click", function() {
+      if (document.getElementById("new-screen").style.display === "block") {
+        document.getElementById("new-screen").style.display = "none";
+        document.getElementById("vertical-container").style.display = "block";
+        document.getElementById("global-panels").style.display = "block";
+      } else if (document.getElementById("white-screen").style.display === "block" || document.getElementById("white-screen2").style.display === "block") {
+        backToNewScreen();
+      } else {
+        const panelsContainer = document.getElementById("global-panels");
+        panelsContainer.style.display = (panelsContainer.style.display === "none" || panelsContainer.style.display === "") ? "block" : "none";
+        if(panelsContainer.style.display === "block") {
+          const panelElements = panelsContainer.querySelectorAll(".panel");
+          const startLeft = 100, topPos = 100, panelWidth = 250, margin = 20;
+          panelElements.forEach((panel, index) => {
+            panel.style.top = topPos + "px";
+            panel.style.left = (startLeft + index * (panelWidth + margin)) + "px";
+          });
+        }
+      }
+      blinkLogo();
+    });
+
+    document.getElementById("enter-btn").addEventListener("click", function(event) {
+      event.stopPropagation();
+      document.getElementById("vertical-container").style.display = "none";
+      document.getElementById("global-panels").style.display = "none";
+      document.getElementById("new-screen").style.display = "block";
+      blinkLogo();
+      let whiteBoxes = document.querySelectorAll('#new-screen .white-box');
+      whiteBoxes.forEach((box, index) => {
+        if(index === 0) {
+          box.style.transform = 'translate(-50%, -50%)';
+          box.style.opacity = '1';
+        } else {
+          if(index >= 4) {
+            box.style.transform = 'translate(-35vmin, 150%)';
+          } else {
+            box.style.transform = 'translate(-50%, 150%)';
+          }
+          box.style.opacity = '0';
+        }
+      });
+      var text = "NEVER STOP TURNING DREAMS INTO REALITY";
+      var speed = 3000 / text.length;
+      let centerMessage = document.querySelector('.center-message');
+      centerMessage.style.transition = "none";
+      centerMessage.style.opacity = "1";
+      centerMessage.innerHTML = '<span class="cursor"></span>';
+      typeWriterEffect(centerMessage, text, 0, speed);
+      document.querySelector('.arrow-down-container').style.opacity = "1";
+      window.currentBoxIndex = 0;
+      window.isAnimating = false;
+    });
+
+    // --- Modifiche per abilitare lo scroll dei box anche in landscape e su dispositivi touch ---
+    // Funzione unificata per gestire lo scroll (up/down) dei box
+    function handleBoxScroll(direction) {
+      if(window.isAnimating) return;
+      window.isAnimating = true;
+      let centerMessage = document.querySelector('.center-message');
+      centerMessage.style.transition = "opacity 0.4s ease-out";
+      centerMessage.style.opacity = "0";
+      let whiteBoxes = document.querySelectorAll('#new-screen .white-box');
+      if (direction === 'down') {
+        if(window.currentBoxIndex >= 4) {
+          whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-35vmin, -150%)';
+        } else {
+          whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-50%, -150%)';
+        }
+        whiteBoxes[window.currentBoxIndex].style.opacity = '0';
+        if(window.currentBoxIndex === whiteBoxes.length - 1) {
+          window.currentBoxIndex = 0;
+        } else {
+          window.currentBoxIndex++;
+        }
+        if(window.currentBoxIndex >= 4) {
+          whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-35vmin, 150%)';
+        } else {
+          whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-50%, 150%)';
+        }
+        whiteBoxes[window.currentBoxIndex].style.opacity = '1';
+        setTimeout(() => {
+          if(window.currentBoxIndex >= 4) {
+            whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-35vmin, -50%)';
+          } else {
+            whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-50%, -50%)';
+          }
+        }, 50);
+      } else if (direction === 'up') {
+        if(window.currentBoxIndex >= 4) {
+          whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-35vmin, 150%)';
+        } else {
+          whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-50%, 150%)';
+        }
+        whiteBoxes[window.currentBoxIndex].style.opacity = '0';
+        if(window.currentBoxIndex === 0) {
+          window.currentBoxIndex = whiteBoxes.length - 1;
+        } else {
+          window.currentBoxIndex--;
+        }
+        if(window.currentBoxIndex >= 4) {
+          whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-35vmin, -150%)';
+        } else {
+          whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-50%, -150%)';
+        }
+        whiteBoxes[window.currentBoxIndex].style.opacity = '1';
+        setTimeout(() => {
+          if(window.currentBoxIndex >= 4) {
+            whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-35vmin, -50%)';
+          } else {
+            whiteBoxes[window.currentBoxIndex].style.transform = 'translate(-50%, -50%)';
+          }
+        }, 50);
+      }
+      setTimeout(() => { 
+        window.isAnimating = false;
+        var captionElement = document.querySelector('.render-title');
+        captionElement.innerHTML = captions[window.currentBoxIndex];
+        captionElement.style.opacity = '1';
+        if(window.currentBoxIndex === 0) {
+          document.querySelector('.arrow-down-container').style.opacity = '1';
+          centerMessage.style.transition = "opacity 0.4s ease-in";
+          centerMessage.style.opacity = '1';
+        } else {
+          document.querySelector('.arrow-down-container').style.opacity = '0';
+          centerMessage.style.transition = "opacity 0.4s ease-out";
+          centerMessage.style.opacity = '0';
+        }
+      }, 600);
+    }
+if (window.innerWidth <= 1320) {
+  const panels = document.querySelectorAll('#global-panels .panel');
+  const startLeft = 20; // offset iniziale a sinistra
+  const topPos = 85;   // posizione verticale comune (o calcolata)
+  const panelWidth = 255; // larghezza dei pannelli
+  const margin = 6;    // spazio tra pannelli
+  
+  panels.forEach((panel, index) => {
+    // Manteniamo il position fixed per permettere il drag
+    panel.style.position = 'fixed';
+    panel.style.top = topPos + 'px';
+    panel.style.left = (startLeft + index * (panelWidth + margin)) + 'px';
+    // Puoi anche rimuovere eventuali margini se non necessari
+    panel.style.margin = '0';
+  });
+  
+  // Se vuoi che il contenitore si comporti comunque da flex container,
+  // puoi applicare lo stile al contenitore ma senza cambiare il position dei pannelli
+  const panelsContainer = document.getElementById('global-panels');
+  panelsContainer.style.display = 'flex';
+  panelsContainer.style.flexDirection = 'row';
+  panelsContainer.style.justifyContent = 'center';
+  panelsContainer.style.alignItems = 'center';
+}
+   // Aggiungiamo il listener per l'evento wheel su "new-screen" anche in modalità landscape
+    if (window.innerWidth > 768 || window.matchMedia("(orientation: landscape)").matches) {
+      document.getElementById('new-screen').addEventListener('wheel', function(e) {
+        e.preventDefault();
+        if (e.deltaY > 0) {
+          handleBoxScroll('down');
+        } else {
+          handleBoxScroll('up');
+        }
+      });
+    }
+if (window.innerWidth <= 1320) {
+  const gallery1Logo = document.querySelector('#gallery1 .gallery-logo');
+  const gallery2Logo = document.querySelector('#gallery2 .gallery-logo');
+  
+  if(gallery1Logo) {
+    gallery1Logo.style.top = '7px';
+    gallery1Logo.style.right = '100px';
+    gallery1Logo.style.width = '150px';
+  }
+  
+  if(gallery2Logo) {
+    gallery2Logo.style.top = '10px';
+    gallery2Logo.style.right = '10px';
+    gallery2Logo.style.width = '150px';
+  }
+}
+    // Aggiungiamo i listener per il touch (swipe) su "new-screen"
+    const newScreen = document.getElementById('new-screen');
+    let touchStartY = 0;
+    let touchThreshold = 50; // soglia in pixel per riconoscere uno swipe
+    newScreen.addEventListener('touchstart', function(e) {
+      touchStartY = e.changedTouches[0].clientY;
+    });
+    newScreen.addEventListener('touchend', function(e) {
+      let touchEndY = e.changedTouches[0].clientY;
+      let deltaY = touchStartY - touchEndY;
+      if (Math.abs(deltaY) > touchThreshold) {
+        if (deltaY > 0) {
+          handleBoxScroll('down');
+        } else {
+          handleBoxScroll('up');
+        }
+      }
+    });
+  </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+    // Verifica se il dispositivo è iOS
+    if (/iP(hone|od|ad)/.test(navigator.userAgent)) {
+      // Aggiorna gli URL delle immagini nei tag <img>
+      document.querySelectorAll('img').forEach(function(img) {
+        if (img.src.indexOf('f_auto') !== -1) {
+          img.src = img.src.replace('f_auto', 'f_png');
+        }
+      });
+      
+      // Aggiorna gli URL delle immagini impostate come background
+      document.querySelectorAll('*').forEach(function(el) {
+        const bg = window.getComputedStyle(el).getPropertyValue('background-image');
+        if (bg && bg.indexOf('f_auto') !== -1) {
+          const newBg = bg.replace('f_auto', 'f_png');
+          el.style.backgroundImage = newBg;
+        }
+      });
+    }
+  });
+</script>
+<script>
+  if (/iP(hone|od|ad)/.test(navigator.userAgent)) {
+    document.body.classList.add('ios');
+  }
+</script>
+</body>
+</html>
